@@ -1,0 +1,27 @@
+*** Settings ***
+Library    Process
+
+*** Variables ***
+${BARCODE_FILE}   barcodes.txt
+${PYTHON_SCRIPT}  read_barcodes.py
+${AGENCY}         1234  # Exemplo de agência fixa
+
+*** Test Cases ***
+Consultar Código de Barras Com Agência
+    # Chama o script Python para ler os códigos de barras
+    ${result} =    Run Process    python3    ${PYTHON_SCRIPT}    ${BARCODE_FILE}    shell=True    stdout=ON
+    ${barcodes} =  Evaluate    ${result.stdout}.strip().replace("[", "").replace("]", "").replace("'", "").split(", ")
+    
+    # Loop para consultar cada código de barras com a agência fixa
+    FOR    ${barcode}    IN    @{barcodes}
+        Log    Consultando a barra: ${barcode} com a agência: ${AGENCY}
+        Consultar Barra Com Agência    ${barcode}    ${AGENCY}
+    END
+
+*** Keywords ***
+Consultar Barra Com Agência
+    [Arguments]    ${barra}    ${agencia}
+    Log    Consultando o código de barras: ${barra} com a agência: ${agencia}
+    # Aqui você pode adicionar a lógica real de consulta, por exemplo, uma API ou banco de dados.
+    # Exemplo de lógica de consulta
+    Log    Consulta concluída para ${barra} com a agência ${agencia}
